@@ -2,8 +2,12 @@ import telegram
 import logging
 import sys
 
+<<<<<<< HEAD
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, InlineQueryHandler, RegexHandler, \
     ConversationHandler, CallbackQueryHandler
+=======
+from telegram.ext import *
+>>>>>>> master
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 
 
@@ -13,15 +17,21 @@ logger = logging.getLogger(__name__)
 
 def start(bot, update):
 
-    keyboard = [[InlineKeyboardButton("find by Location", callback_data='1'),
-                 InlineKeyboardButton("find by Food", callback_data='2')]]
+    keyboard = [[telegram.KeyboardButton("find by Location", request_location=True),
+                 telegram.KeyboardButton("find by Food")]]
 
-    reply_markup = InlineKeyboardMarkup(keyboard)
+    reply_markup = telegram.ReplyKeyboardMarkup(keyboard)
 
-    update.message.reply_text(
-        'Hello, welcome to SG find cheap food bot. To start select one of the options below'
-        'To quit, end with cancel to leave the bot',
+    bot.send_message(chat_id = update.message.chat_id,
+        text = 'Hello, welcome to SG find cheap food bot. To start select one of the options below'
+        'To quit, end with cancel to leave the bots',
         reply_markup=reply_markup)
+
+def location(bot, update):
+    # print ("testing")
+    print (update.message.location)
+
+
 
 
 def button(bot, update):
@@ -49,14 +59,20 @@ def error(bot, update, error):
 
 def main():
     # Create the EventHandler and pass it your bot's token.
-    updater = Updater("662276798:AAFbFHPtT9I7_sNzKAjKc14XW-b-ZCLT7TU")
+    # 662276798:AAFbFHPtT9I7_sNzKAjKc14XW-b-ZCLT7TU
+    updater = Updater("711232217:AAHvs7ZAz8m75-za24XjMvaNX4K9KUUf2SQ")
 
     # Get the dispatcher to register handlers
     dp = updater.dispatcher
 
     dp.add_handler(CommandHandler("start", start))
+<<<<<<< HEAD
     updater.dispatcher.add_handler(CallbackQueryHandler(button))
     dp.add_handler(CommandHandler("by_food", by_food))
+=======
+    dp.add_handler(MessageHandler(Filters.location, location))
+
+>>>>>>> master
 
 
     # log all errors
