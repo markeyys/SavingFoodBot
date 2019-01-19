@@ -1,9 +1,9 @@
 import telegram
 import logging
 import sys
-import requests
+
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, InlineQueryHandler, RegexHandler, ConversationHandler
-from telegram import InlineQueryResultArticle, InputTextMessageContent, ReplyKeyboardMarkup, ReplyKeyboardRemove
+from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 
 
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level = logging.INFO)
@@ -11,7 +11,17 @@ logger = logging.getLogger(__name__)
 
 
 
+def start(bot, update):
 
+    keyboard = [[InlineKeyboardButton("find by Location", callback_data='1'),
+                 InlineKeyboardButton("find by Food", callback_data='2')]]
+
+    reply_markup = InlineKeyboardMarkup(keyboard)
+
+    update.message.reply_text(
+        'Hello, welcome to SG find cheap food bot. To start select one of the options below'
+        'To quit, end with cancel to leave the bot',
+        reply_markup=reply_markup)
 
 
 
@@ -28,6 +38,7 @@ def main():
     # Get the dispatcher to register handlers
     dp = updater.dispatcher
 
+    dp.add_handler(CommandHandler("start", start))
 
 
     # log all errors
