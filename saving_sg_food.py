@@ -1,5 +1,9 @@
 import telegram
 import logging
+import string
+import urllib
+
+import time
 
 import json
 import requests
@@ -15,9 +19,6 @@ from telegram.ext import *
 
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 
-
-TOKEN = "662276798:AAFbFHPtT9I7_sNzKAjKc14XW-b-ZCLT7TU"
-URL = "https://api.telegram.org/bot{}/".format(TOKEN)
 
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -50,49 +51,17 @@ def button(bot, update):
 
 
 def find_by_food(bot, update):
-    update.message.reply_text("Hot Search: \n"
-                              "1) ChickenRice \n"
-                              "2) DuckRice \n"
-                              "Or \n"
-                              "Type your own")
+    r = requests.get('http://127.0.0.1:5000/foods.json')
+    g = r.json()
+    tgt = []
+    for h in g:
+        tgt.append(h)
 
-
-def get_url(url):
-    response = requests.get(url)
-    content = response.content.decode("utf8")
-    return content
-
-
-def get_json_from_url(url):
-    content = get_url(url)
-    js = json.loads(content)
-    return js
-
-
-def get_updates():
-    url = URL + "getUpdates"
-    js = get_json_from_url(url)
-    return js
-
-
-def get_last_chat_id_and_text(updates):
-    num_updates = len(updates["result"])
-    last_update = num_updates - 1
-    text = updates["result"][last_update]["message"]["text"]
-    chat_id = updates["result"][last_update]["message"]["chat"]["id"]
-    return text, chat_id
-
-
-def send_message(text, chat_id):
-    url = URL + "sendMessage?text={}&chat_id={}".format(text, chat_id)
-    get_url(url)
+    update.message.reply_text(str(h['id']) + " - " + h['name'])
 
 
 def search_by_name(bot, update):
     print("hello")
-    text, chat = get_last_chat_id_and_text(get_updates())
-    print(text)
-    send_message(text, chat)
 
 
 def error(bot, update, error):
@@ -111,8 +80,8 @@ def main():
     dp.add_handler(CommandHandler("start", start))
     dp.add_handler(CommandHandler("Find_by_Food", find_by_food))
     dp.add_handler(CommandHandler("searchFood", search_by_name))
-    dp.add_handler(CallbackQueryHandler(button))
     dp.add_handler(MessageHandler(Filters.location, location))
+
 
     # log all errors
     dp.add_error_handler(error)
