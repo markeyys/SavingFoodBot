@@ -20,7 +20,7 @@ def start(bot, update):
 
     update.message.reply_text(
         'Hello, welcome to SG find cheap food bot. To start select one of the options below'
-        'To quit, end with cancel to leave the bot',
+        'To quit, end with cancel to leave the bots',
         reply_markup=reply_markup)
 
 
