@@ -2,7 +2,8 @@ import telegram
 import logging
 import sys
 
-from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, InlineQueryHandler, RegexHandler, ConversationHandler
+from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, InlineQueryHandler, RegexHandler, \
+    ConversationHandler, CallbackQueryHandler
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 
 
@@ -24,11 +25,27 @@ def start(bot, update):
         reply_markup=reply_markup)
 
 
+def button(bot, update):
+    query = update.callback_query
+
+    bot.edit_message_text(text="Selected option: {}".format(query.data),
+                          chat_id=query.message.chat_id,
+                          message_id=query.message.message_id)
+
+
+def by_food(bot, update):
+
+    # reply_markup = InlineKeyboardMarkup(keyboard)
+
+    update.message.reply_text(
+        '/Chicken Rice'
+        '/Duck Rice'
+        '/Roasted Pork Rice')
+
 
 def error(bot, update, error):
     """Log Errors caused by Updates."""
     logger.warning('Update "%s" caused error "%s"', update, error)
-
 
 
 def main():
@@ -39,6 +56,8 @@ def main():
     dp = updater.dispatcher
 
     dp.add_handler(CommandHandler("start", start))
+    updater.dispatcher.add_handler(CallbackQueryHandler(button))
+    dp.add_handler(CommandHandler("by_food", by_food))
 
 
     # log all errors
