@@ -2,7 +2,7 @@ import telegram
 import logging
 import sys
 
-from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, InlineQueryHandler, RegexHandler, ConversationHandler
+from telegram.ext import *
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 
 
@@ -13,15 +13,21 @@ logger = logging.getLogger(__name__)
 
 def start(bot, update):
 
-    keyboard = [[InlineKeyboardButton("find by Location", callback_data='1'),
-                 InlineKeyboardButton("find by Food", callback_data='2')]]
+    keyboard = [[telegram.KeyboardButton("find by Location", request_location=True),
+                 telegram.KeyboardButton("find by Food")]]
 
-    reply_markup = InlineKeyboardMarkup(keyboard)
+    reply_markup = telegram.ReplyKeyboardMarkup(keyboard)
 
-    update.message.reply_text(
-        'Hello, welcome to SG find cheap food bot. To start select one of the options below'
+    bot.send_message(chat_id = update.message.chat_id,
+        text = 'Hello, welcome to SG find cheap food bot. To start select one of the options below'
         'To quit, end with cancel to leave the bots',
         reply_markup=reply_markup)
+
+def location(bot, update):
+    # print ("testing")
+    print (update.message.location)
+
+
 
 
 
@@ -33,12 +39,15 @@ def error(bot, update, error):
 
 def main():
     # Create the EventHandler and pass it your bot's token.
-    updater = Updater("662276798:AAFbFHPtT9I7_sNzKAjKc14XW-b-ZCLT7TU")
+    # 662276798:AAFbFHPtT9I7_sNzKAjKc14XW-b-ZCLT7TU
+    updater = Updater("711232217:AAHvs7ZAz8m75-za24XjMvaNX4K9KUUf2SQ")
 
     # Get the dispatcher to register handlers
     dp = updater.dispatcher
 
     dp.add_handler(CommandHandler("start", start))
+    dp.add_handler(MessageHandler(Filters.location, location))
+
 
 
     # log all errors
