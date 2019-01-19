@@ -11,7 +11,6 @@ logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s
 logger = logging.getLogger(__name__)
 
 
-
 def start(bot, update):
 
     keyboard = [[InlineKeyboardButton("find by Location", callback_data='1'),
