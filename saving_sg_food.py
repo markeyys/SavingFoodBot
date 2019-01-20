@@ -60,7 +60,26 @@ def get_last_update_id(updates):
 def echo(bot, update):
     text = update.message.text
     chat = update.message.chat_id
-    getvendors(text, chat)
+    print (text, text[0])
+
+    if text[0] == 'v':
+        finalStr = ""
+        vendor_id = text[1:]
+        if vendor_id is not None:
+            for id in vendor_id:
+                get_food_request = requests.get('http://127.0.0.1:5000/vendors/'+str(id)+'.json')
+                vendor = get_food_request.json()
+
+                finalStr += "%s @ %s\n"%(vendor['name'], vendor['hawker_name'] )
+
+                for dfood in vendor['foods']:
+                    discount = dfood['discount']
+                    if discount > 0:
+                        finalStr += "DishName: %s \n    Cost: $%d \n    Discount: %dcent \n\n"%(dfood['name'], dfood['cost'], dfood['discount'])
+
+        update.message.reply_text(finalStr)
+    else:
+        getvendors(text, chat, bot, update)
 
 def echo_all(updates):
     for update in updates["result"]:
@@ -91,15 +110,14 @@ def send_message(text, chat_id):
 """
 
 
-def getvendors(text, chat_id):
+def getvendors(text, chat_id, bot, update):
     r = requests.get('http://127.0.0.1:5000/foods/' + text + '/vendors.json')
     g = r.json()
-    tgt = []
+    vendor_str = ""
     for h in g:
-        tgt.append(h)
+        vendor_str += "v%d - %s\n"%(h['hawker_id'], h['name'])
 
-    url = URL + "sendMessage?text={}&chat_id={}".format(tgt, chat_id)
-    get_url(url)
+    update.message.reply_text(vendor_str + "\n\n To find the specific food. Please key in the Food Number")
 
 
 def retrieve_message():
@@ -196,9 +214,8 @@ def find_by_food(bot, update):
     r = requests.get('http://127.0.0.1:5000/foods.json')
     g = r.json()
     tgt = []
-    for h in g:
-        tgt.append(h)
-    update.message.reply_text(str(h['id']) + " - " + h['name'])
+
+    update.message.reply_text('\n'.join(map(lambda h: str(h['id']) + " - " + h['name'] + "\n", g)))
 
 
 def search_by_name(bot, update):
@@ -213,7 +230,7 @@ def error(bot, update, error):
 def main():
     # Create the EventHandler and pass it your bot's token.
     # 662276798:AAFbFHPtT9I7_sNzKAjKc14XW-b-ZCLT7TU
-    updater = Updater("711232217:AAHvs7ZAz8m75-za24XjMvaNX4K9KUUf2SQ")
+    updater = Updater("662276798:AAFbFHPtT9I7_sNzKAjKc14XW-b-ZCLT7TU")
 
     # Get the dispatcher to register handlers
     dp = updater.dispatcher
