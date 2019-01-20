@@ -13,7 +13,7 @@ class DBQuery:
 
     def add_item(self, item_text):
         stmt = "INSERT INTO items (description) VALUES (?)"
-        args = (item_text, )
+        args = (item_texts)
         self.conn.execute(stmt, args)
         self.conn.commit()
 
